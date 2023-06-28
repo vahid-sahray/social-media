@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 
 class UserRegistrationForm(forms.Form):
-    username = forms.CharField()
+
     email = forms.EmailField()
     password1 = forms.CharField(label='password' ,widget=forms.PasswordInput)
     password2 = forms.CharField(label='confirm password' ,widget=forms.PasswordInput)   
@@ -34,3 +34,8 @@ class UserRegistrationForm(forms.Form):
 
         if p1 and p2 and p1 != p2:
             raise ValidationError('password must much')
+        
+
+class UserLoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(label='password' ,widget=forms.PasswordInput)
