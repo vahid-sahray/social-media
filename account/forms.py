@@ -1,11 +1,10 @@
-from typing import Any
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
 class UserRegistrationForm(forms.Form):
-
+    username = forms.CharField()
     email = forms.EmailField()
     password1 = forms.CharField(label='password' ,widget=forms.PasswordInput)
     password2 = forms.CharField(label='confirm password' ,widget=forms.PasswordInput)   
