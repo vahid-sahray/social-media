@@ -7,7 +7,7 @@ from django.views import View
 from .models import Post
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from .forms import PostUpdateForm
+from .forms import PostCreateUpdateForm
 from django.utils.text import slugify
 
 
@@ -20,7 +20,7 @@ class HomeView(View):
 class PostDetailView(View):
     def get(self, request, post_id, post_slug):
         post = Post.objects.get(pk=post_id, slug=post_slug)
-        return render(request, 'home/post_detail.html', {'post': post})
+        return render(request, 'home/detail.html', {'post': post})
     
 
 class PostDeleteView(LoginRequiredMixin, View):
@@ -35,7 +35,7 @@ class PostDeleteView(LoginRequiredMixin, View):
     
 
 class PostUpdateView(LoginRequiredMixin, View):
-    form_class = PostUpdateForm
+    form_class = PostCreateUpdateForm
 
     def setup(self, request, *args, **kwargs):
         self.post_instance = Post.objects.get(pk=kwargs['post_id'])
@@ -53,7 +53,7 @@ class PostUpdateView(LoginRequiredMixin, View):
       form = self.form_class(instance=post)
       return render(request, 'home/update.html', {'form': form})
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         post = self.post_instance
         form = self.form_class(request.POST, instance=post)
         if form.is_valid():
@@ -64,3 +64,19 @@ class PostUpdateView(LoginRequiredMixin, View):
             return redirect('home:post_detail', post.id, post.slug)
         
 
+class PostCreateView(LoginRequiredMixin, View):
+    form_class = PostCreateUpdateForm
+
+    def get(self ,request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, 'home/create.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(form.cleaned_data['body'][:30])
+            new_post.user = request.user
+            new_post.save()
+            messages.success(request, 'you created a new post', 'success')
+            return redirect('home:post_detail', new_post.id, new_post.slug)
