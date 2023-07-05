@@ -7,11 +7,11 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name= 'posts')
     body = models.TextField()
     slug = models.SlugField()
-    cleated = models.DateField(auto_now_add=True)
+    created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
     class Meta:
-        ordering = ('-created', '-body')
+        ordering = ('-created',)
 
     def __str__(self):
         return f'{self.slug} - {self.updated}'
